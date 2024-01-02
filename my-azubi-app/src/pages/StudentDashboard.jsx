@@ -1,27 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { UserOutlined, FileDoneOutlined, TeamOutlined, LineChartOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Layout, Breadcrumb, Typography, Select, Card, Row, Col, Statistic, Button, Divider } from 'antd';
+import { Layout, Breadcrumb, Typography,message, Select, Card, Row, Col, Statistic, Button, Divider } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-
+import axios from 'axios';
 const { Content } = Layout;
 const { Title } = Typography;
 const { Option } = Select;
 
 const StudentDashboard = () => {
+
+    // check if backend url is saved in localstorage, if not, redirect to configuration page
+    useEffect(() => {
+        if (!localStorage.getItem('backendUrl')) {
+            message.error('Please configure the backend URL');
+
+            setTimeout(() => {
+                window.location.href = '/config';
+            }
+                , 3000);
+
+
+        }
+
+    }, []);
     
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [selectedStudentData, setSelectedStudentData] = useState({});
     const [allStudentsData, setAllStudentsData] = useState([]);
     const [cohortStats, setCohortStats] = useState({});
+    const [selectedCohort, setSelectedCohort] = useState(null); // default cohort is 'cohort 2
     
     const [selectedRange, setSelectedRange] = useState('1-4');
 
     // Function to get filtered data based on selected range
     const getFilteredData = () => {
         const [start, end] = selectedRange.split('-').map(Number);
-        // return fullAttendanceData.filter((item, index) => index >= start - 1 && index <= end - 1);
-        // return selectedStudentData.weeklyAttendance.filter((item, index) => index >= start - 1 && index <= end - 1);
-    // if no data is available, return an empty array
+
     if (!selectedStudentData.weeklyAttendance) return [];
     // return the filtered data
     return selectedStudentData.weeklyAttendance.filter((item, index) => index >= start - 1 && index <= end - 1);
@@ -32,75 +46,19 @@ const StudentDashboard = () => {
 
     // Mock data for the PieChart
     const pieData = [
-        { name: 'Completed', value: selectedStudentData.assignmentCompletion || 0 },
-        { name: 'Pending', value: 24 - (selectedStudentData.assignmentCompletion || 0) },
+        { name: 'Completed', value: selectedStudentData.assignment_completion || 0 },
+        { name: 'Pending', value: 24 - (selectedStudentData.assignment_completion || 0) },
     ];
     const COLORS = ['#0088FE', '#FFBB28'];
 
     // Mock function to simulate fetching all students data
     const fetchAllStudentsData = () => {
-        // Replace with actual API call
-        setAllStudentsData([
-            {
-                name: "John Doe",
-                email: "johndoe@example.com",
-                attendanceAverage: 90,
-                assignmentCompletion: 10,
-                ranking: 5,
-                weeklyAttendance: [
-                    { week: 'Week 1', present: 4, absent: 1 },
-                    { week: 'Week 2', present: 5, absent: 0 },
-                    { week: 'Week 3', present: 4, absent: 1 },
-                    { week: 'Week 4', present: 5, absent: 0 },
-                    { week: 'Week 5', present: 4, absent: 1 },
-                    { week: 'Week 6', present: 5, absent: 0 },
-                    { week: 'Week 7', present: 4, absent: 1 },
-                    { week: 'Week 8', present: 5, absent: 0 },
-                    { week: 'Week 9', present: 4, absent: 1 },
-                    { week: 'Week 10', present: 5, absent: 0 },
-                    { week: 'Week 11', present: 4, absent: 1 },
-                    { week: 'Week 12', present: 5, absent: 0 },
-                ],
-                cohort: 'Cohort 1',
-            },
-            {
-                name: "Jane Smith",
-                email: "janesmith@example.com",
-                attendanceAverage: 80,
-                assignmentCompletion: 5,
-                ranking: 10,weeklyAttendance: [
-                    { week: 'Week 1', present: 3, absent: 2 },
-                    { week: 'Week 2', present: 2, absent: 3 },
-                    { week: 'Week 3', present: 3, absent: 2 },
-                    { week: 'Week 4', present: 2, absent: 3 },
-                    { week: 'Week 5', present: 3, absent: 2 },
-                    { week: 'Week 6', present: 2, absent: 3 },
-                    { week: 'Week 7', present: 3, absent: 2 },
-                    { week: 'Week 8', present: 2, absent: 3 },
-                    { week: 'Week 9', present: 3, absent: 2 },
-                    { week: 'Week 10', present: 2, absent: 3 },
-                    { week: 'Week 11', present: 3, absent: 2 },
-                    { week: 'Week 12', present: 2, absent: 3 },
 
-                ],
-                cohort: 'Cohort 2',
-            },
-            // average complaince
-            {
-                name: "Mike Tyson",
-                email: "miketyson@email.com",
-                attendanceAverage: 30,
-                assignmentCompletion: 12,
-                ranking: 15,
-            },
-            {
-                name: "John Cena",
-                email: "johncena@email.com",
-                attendanceAverage: 20,
-                assignmentCompletion: 20,
-                ranking: 20,
-            },
-        ]);
+        const backendUrl = localStorage.getItem('backendUrl');
+        axios.get(`${backendUrl}/api/students`)
+            .then(response => setAllStudentsData(response.data))
+            .catch(error => console.log(error));
+
     };
 
     const fetchStudentData = (studentEmail) => {
@@ -109,24 +67,22 @@ const StudentDashboard = () => {
     };
 
     // Mock function to simulate fetching cohort stats
-    const fetchCohortStats = () => {
-        // Example: axios.get('/api/cohort/stats').then(response => setCohortStats(response.data));
-        setCohortStats({
-            averageAttendance: 85,
-            averageAssignmentCompletion: 80,
-            totalStudents: 50,
-            name: "Cohort 1",
-        }
-        );
+    const fetchCohortStats = (value) => {
+        const backendUrl = localStorage.getItem('backendUrl');
+
+        // /api/cohort/stats
+        axios.get(`${backendUrl}/api/cohort/stats/${value}`)
+            .then(response => setCohortStats(response.data))
+            .catch(error => console.log(error));
     };
 
-    const cohortPerformanceData = [
-        { date: 'Week 1', averageScore: 70, averageAttendance: 80 },
-        { date: 'Week 2', averageScore: 75, averageAttendance: 85 },
-    ];
+    // const cohortPerformanceData = [
+    //     { date: 'Week 1', averageScore: 70, averageAttendance: 80 },
+    //     { date: 'Week 2', averageScore: 75, averageAttendance: 85 },
+    // ];
 
     useEffect(() => {
-        fetchCohortStats();
+        fetchCohortStats('cohort 2');
         fetchAllStudentsData();
     }, []);
     const clearSelection = () => {
@@ -138,16 +94,21 @@ const StudentDashboard = () => {
         fetchStudentData(value);
     };
 
+    const handlecohortChange = (value) => {
+        setSelectedCohort(value);
+        fetchCohortStats(value);
+    };
+
+
     // Function to compute compliance state
-    const getComplianceState = (attendanceAverage) => {
-        if (attendanceAverage > 80) return "High Compliance";
-        if (attendanceAverage >= 60) return "Good Compliance";
-        if (attendanceAverage >= 30) return "Medium Compliance";
+    const getComplianceState = (score) => {
+        if (score > 80) return "High Compliance";
+        if (score >= 60) return "Good Compliance";
+        if (score >= 30) return "Medium Compliance";
         return "Low Compliance";
     };
 
-    const getAdvisoryMessage = (attendanceAverage) => {
-        // Helper function to randomly select a message
+    const getAdvisoryMessage = (score) => {
         const getRandomMessage = (messages) => {
             return messages[Math.floor(Math.random() * messages.length)];
         };
@@ -172,11 +133,11 @@ const StudentDashboard = () => {
             "This is a chance to turn things around! 'The way to get started is to quit talking and begin doing.' – Walt Disney"
         ];
     
-        if (attendanceAverage > 80) {
+        if (score > 80) {
             return getRandomMessage(highAttendanceMessages);
-        } else if (attendanceAverage >= 60) {
+        } else if (score >= 60) {
             return getRandomMessage(goodAttendanceMessages);
-        } else if (attendanceAverage >= 30) {
+        } else if (score >= 30) {
             return getRandomMessage(averageAttendanceMessages);
         } else {
             return getRandomMessage(lowAttendanceMessages);
@@ -184,10 +145,21 @@ const StudentDashboard = () => {
     };
     
 
+const totalAssignments = 24; // Total number of assignments
+const completedAssignments = selectedStudentData.assignment_completion; // Number of completed assignments
+
+// Calculate ratios
+const attendanceRatio = selectedStudentData.attendance_average / 100; // Convert percentage to a decimal
+const assignmentCompletionRatio = completedAssignments / totalAssignments;
+
+// Calculate weighted score
+const weightedScore = (attendanceRatio * 70) + (assignmentCompletionRatio * 30);
+
+
 
     return (
         <Layout className="layout">
-            <Content style={{ padding: '0 50px' }}>
+            <Content style={{ padding: '0 20px' }}>
                 <Breadcrumb style={{ margin: '16px 0' }}>
                     {/* Breadcrumb items */}
                 </Breadcrumb>
@@ -213,6 +185,27 @@ const StudentDashboard = () => {
                         
 
                     </Select>
+
+                    {/* cohort selector */}
+                    {!selectedStudent && (<Select
+                        showSearch
+                        style={{ width: 400, marginLeft: 16 }}
+                        placeholder="Select/search a cohort"
+                        optionFilterProp="children"
+                        onChange={handlecohortChange}
+                        value={selectedCohort}
+                        filterOption={(input, option) =>
+                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                    >
+                        {/* pick cohort name from student data */}
+                        {allStudentsData.map(student => student.cohort).filter((value, index, self) => self.indexOf(value) === index).map(cohort => (
+                            <Option key={cohort} value={cohort}>{cohort}</Option>
+                        ))}
+
+                    </Select>
+                    )}
+
                     
                     {selectedStudent && (
                         <Button
@@ -232,8 +225,8 @@ const StudentDashboard = () => {
                             <Card title="Student Performance">
                                 <p><strong>Name:</strong> {selectedStudentData.name||'N/A'}, <strong>Cohort:</strong> {selectedStudentData.cohort||'N/A'}</p>
                                 <p><strong>Email:</strong> {selectedStudentData.email||'N/A'}</p>
-                                <p>Attendance Average: <strong><span  style={{fontSize:'1.4rem',padding:10}}>{selectedStudentData.attendanceAverage||'N/A'}%</span></strong> </p>
-                                <p>Assignment Completion:<strong> <span  style={{fontSize:'1.4rem',padding:5}}>{selectedStudentData.assignmentCompletion||'N/A'}%</span></strong></p>
+                                <p>Attendance Average: <strong><span  style={{fontSize:'1.4rem',padding:10}}>{selectedStudentData.attendance_average||'N/A'}%</span></strong> </p>
+                                <p>Assignment Completion:<strong> <span  style={{fontSize:'1.4rem',padding:5}}>{(assignmentCompletionRatio*100).toFixed(2) ||'N/A'}%</span></strong></p>
                             </Card>
                         </Col>
                         <Col span={12}>
@@ -247,10 +240,10 @@ const StudentDashboard = () => {
                                     cursor: 'default',
                                     // disabled color based on compliance state
                                     color: 'black',
-                                    backgroundColor: getComplianceState(selectedStudentData.attendanceAverage||'N/A')==='High Compliance'?'#a8ff78':getComplianceState(selectedStudentData.attendanceAverage||'N/A')==='Good Compliance'?'#fffc00':getComplianceState(selectedStudentData.attendanceAverage||'N/A')==='Medium Compliance'?'#ffd200':'#ff416c'}}
+                                    backgroundColor: getComplianceState(weightedScore||'N/A')==='High Compliance'?'#a8ff78':getComplianceState(weightedScore||'N/A')==='Good Compliance'?'#fffc00':getComplianceState(weightedScore||'N/A')==='Medium Compliance'?'#ffd200':'#ff416c'}}
                             >
                                 {
-                                getComplianceState(selectedStudentData.attendanceAverage||'N/A')
+                                getComplianceState(weightedScore ||'N/A')
                                 }
                             </Button>
                             } 
@@ -258,7 +251,7 @@ const StudentDashboard = () => {
                                 
                                 <p><strong>Advisory Message:</strong> 
                                 <br/>
-                                {getAdvisoryMessage(selectedStudentData.attendanceAverage)}
+                                {getAdvisoryMessage(weightedScore)}
                                 </p>
                                 
                                 <p style={{fontSize:'2rem',padding:0}}><strong>Ranking:</strong> {selectedStudentData.ranking || 'N/A'}</p>
@@ -310,6 +303,28 @@ const StudentDashboard = () => {
                             </Row>
                 ])}
 
+                <Divider/>
+
+                {/* cohort selector */}
+                {selectedStudent && (<Select
+                        showSearch
+                        style={{ width: 400, marginLeft: 16 }}
+                        placeholder="Select/search a cohort"
+                        optionFilterProp="children"
+                        onChange={handlecohortChange}
+                        value={selectedCohort}
+                        filterOption={(input, option) =>
+                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                    >
+                        {/* pick cohort name from student data */}
+                        {allStudentsData.map(student => student.cohort).filter((value, index, self) => self.indexOf(value) === index).map(cohort => (
+                            <Option key={cohort} value={cohort}>{cohort}</Option>
+                        ))}
+
+                    </Select>
+                    )}
+
                     {/* Cohort Statistics */}
                     <Row gutter={16} style={{ marginTop: 16 }}>
                         <Col span={8}>
@@ -346,7 +361,7 @@ const StudentDashboard = () => {
                     </Row>
 
                     <Divider/>
-                    <Card title="Cohort Performance Over Time">
+                    {/* <Card title="Cohort Performance Over Time">
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={cohortPerformanceData}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -358,7 +373,7 @@ const StudentDashboard = () => {
                                 <Line type="monotone" dataKey="averageAttendance" stroke="#82ca9d" />
                             </LineChart>
                         </ResponsiveContainer>
-                    </Card>
+                    </Card> */}
                 </div>
             </Content>
         </Layout>

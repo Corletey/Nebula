@@ -7,6 +7,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import ProjectPortal from './pages/ProjectPortal';
 import AdminPanel from './pages/AdminPanel';
 import UnlockHint from './pages/UnlockHint';
+import ConfigurationPage from './pages/Configuration';
 
 // ant icons
 import { DashboardTwoTone, UnlockTwoTone, SettingTwoTone } from '@ant-design/icons';
@@ -19,6 +20,10 @@ const App = () => {
         <Menu mode="horizontal" className="menu">
         <Link to="/"><span className="menu-logo" role="img" aria-label="Nebula Logo" style={{color:'grey'}}>🚀 Nebula - dock</span></Link>
           <div className="menu-items">
+            
+          <Menu.Item key="config">
+              <Link to="/config"><SettingTwoTone/> Configurations</Link>
+            </Menu.Item>
             <Menu.Item key="student-dashboard" >
               <Link to="/student-dashboard">
                 <DashboardTwoTone/> Student Dashboard</Link>
@@ -29,9 +34,6 @@ const App = () => {
             <Menu.Item key="admin-panel">
               <Link to="/admin-panel">Admin Panel</Link>
             </Menu.Item> */}
-            <Menu.Item key="config">
-              <Link to="/config"><SettingTwoTone/> Configurations</Link>
-            </Menu.Item>
             <Menu.Item key="divider">
               <Divider type="vertical" />
             </Menu.Item>
@@ -49,6 +51,7 @@ const App = () => {
           <Route path="/project-portal" element={<ProjectPortal />} />
           <Route path="/admin-panel" element={<AdminPanel />} />
           <Route path="/unlock-hint" element={<UnlockHint />} />
+          <Route path="/config" element={<ConfigurationPage />} />
           {/* Add more routes as needed */}
         </Routes>
     </Router>
