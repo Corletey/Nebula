@@ -6,13 +6,13 @@
 1. **Clone the Repository**
 
     ```bash
-    git clone https://github.com/your-username/your-react-app.git
+    git clone [https://github.com/your-username/your-react-app.git](https://github.com/lawrencemuema/Project-Nebula_-code-.git)
     ```
 
 2. **Navigate to the Project Directory**
 
     ```bash
-    cd your-react-app
+    cd Project-Nebula_-code-
     ```
 
 3. **Install Dependencies**
@@ -33,6 +33,6 @@ Now that you have the project set up, you can run the application with the follo
 
 **Building app**
 
-    ```bash
+ ```bash
     npm run build
-    ```
+ ```
