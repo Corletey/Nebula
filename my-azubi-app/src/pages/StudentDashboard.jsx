@@ -28,7 +28,8 @@ const StudentDashboard = () => {
     const [selectedStudentData, setSelectedStudentData] = useState({});
     const [allStudentsData, setAllStudentsData] = useState([]);
     const [cohortStats, setCohortStats] = useState({});
-    const [selectedCohort, setSelectedCohort] = useState(null); // default cohort is 'cohort 2
+    const [cohortGraphStats, setCohortGraphStats] = useState({});
+    const [selectedCohort, setSelectedCohort] = useState(null); // default cohort is 'Cohort2
     
     const [selectedRange, setSelectedRange] = useState('1-4');
 
@@ -56,7 +57,11 @@ const StudentDashboard = () => {
 
         const backendUrl = localStorage.getItem('backendUrl');
         axios.get(`${backendUrl}/api/students`)
-            .then(response => setAllStudentsData(response.data))
+            .then(response =>{
+                console.log(response.data);
+                setAllStudentsData(response.data);
+            }
+            )
             .catch(error => console.log(error));
 
     };
@@ -71,18 +76,38 @@ const StudentDashboard = () => {
         const backendUrl = localStorage.getItem('backendUrl');
 
         // /api/cohort/stats
+        
         axios.get(`${backendUrl}/api/cohort/stats/${value}`)
-            .then(response => setCohortStats(response.data))
+
+            .then(
+                response => {
+                    console.log("cohort stats",response.data);
+                    setCohortStats(response.data);
+                }
+            )
             .catch(error => console.log(error));
     };
 
-    // const cohortPerformanceData = [
-    //     { date: 'Week 1', averageScore: 70, averageAttendance: 80 },
-    //     { date: 'Week 2', averageScore: 75, averageAttendance: 85 },
-    // ];
+    const fetchcohortPerformanceData = (value) => {
+        const backendUrl = localStorage.getItem('backendUrl');
+        console.log(value)
+    
+        axios.get(`${backendUrl}/api/cohort/attendance/${value}`)
+            .then(response => {
+                console.log("cohort graph stats",response.data);
+                const formattedData = response.data.map(item => ({
+                    ...item,
+                    attendanceAverage: parseFloat(item.attendanceAverage) // Parse to float
+                }));
+                setCohortGraphStats(formattedData);
+            })
+            .catch(error => console.log(error));
+    };
+
 
     useEffect(() => {
-        fetchCohortStats('cohort 2');
+        fetchCohortStats('Cohort2');
+        fetchcohortPerformanceData('Cohort2');
         fetchAllStudentsData();
     }, []);
     const clearSelection = () => {
@@ -97,6 +122,7 @@ const StudentDashboard = () => {
     const handlecohortChange = (value) => {
         setSelectedCohort(value);
         fetchCohortStats(value);
+        fetchcohortPerformanceData(value);
     };
 
 
@@ -330,8 +356,8 @@ const weightedScore = (attendanceRatio * 70) + (assignmentCompletionRatio * 30);
                         <Col span={8}>
                             <Card>
                                 <Statistic
-                                    title="Average Attendance"
-                                    value={cohortStats.averageAttendance||'N/A'}
+                                    title="attendance_average (avg)"
+                                    value={cohortStats.attendance_average||'N/A'}
                                     precision={2}
                                     valueStyle={{ color: '#3f8600' }}
                                     prefix={<UserOutlined />}
@@ -341,8 +367,8 @@ const weightedScore = (attendanceRatio * 70) + (assignmentCompletionRatio * 30);
                         <Col span={8}>
                             <Card>
                                 <Statistic
-                                    title="Average Assignment Completion"
-                                    value={cohortStats.averageAssignmentCompletion||'N/A'}
+                                    title="assignment_completion (avg)"
+                                    value={cohortStats.assignment_completion||'N/A'}
                                     precision={2}
                                     valueStyle={{ color: '#cf1322' }}
                                     prefix={<FileDoneOutlined />}
@@ -352,8 +378,8 @@ const weightedScore = (attendanceRatio * 70) + (assignmentCompletionRatio * 30);
                         <Col span={8}>
                             <Card>
                                 <Statistic
-                                    title="Total Students"
-                                    value={cohortStats.totalStudents||'N/A'}
+                                    title="total_students"
+                                    value={cohortStats.total_students||'N/A'}
                                     prefix={<TeamOutlined />}
                                 />
                             </Card>
@@ -361,19 +387,19 @@ const weightedScore = (attendanceRatio * 70) + (assignmentCompletionRatio * 30);
                     </Row>
 
                     <Divider/>
-                    {/* <Card title="Cohort Performance Over Time">
+                    <Card title="Cohort Performance Over Time">
                         <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={cohortPerformanceData}>
+                            <LineChart data={cohortGraphStats}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis />
+                                <XAxis dataKey="week" />
+                                <YAxis dataKey="attendanceAverage" />
                                 <Tooltip />
                                 <Legend />
-                                <Line type="monotone" dataKey="averageScore" stroke="#8884d8" />
-                                <Line type="monotone" dataKey="averageAttendance" stroke="#82ca9d" />
+                                <Line type="monotone" dataKey="attendanceAverage" stroke="blue" />
                             </LineChart>
                         </ResponsiveContainer>
-                    </Card> */}
+                    </Card>
+
                 </div>
             </Content>
         </Layout>

@@ -103,6 +103,7 @@ const ConfigurationPage = () => {
             <li><code style={{color:'purple'}}>GET</code> <code style={{color:'blue'}}>"/api/students"</code> - Get All Students</li>
             <li><code style={{color:'purple'}}>POST</code> <code style={{color:'blue'}}>"/api/student/[email]"</code> - Get A Students Details</li>
             <li><code style={{color:'purple'}}>GET</code> <code style={{color:'blue'}}>"/api/cohort/stats/[cohort_name]"</code> - Get Cohort Stats</li>
+            <li><code style={{color:'purple'}}>GET</code> <code style={{color:'blue'}}>"/api/cohort/attendance/[cohort_name]"</code> - Get Cohort attendance stats (Graph)</li>
         </ol>
         </Col>
     </Row>

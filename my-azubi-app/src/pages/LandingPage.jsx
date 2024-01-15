@@ -92,7 +92,7 @@ const LandingPage = () => {
                   headStyle={{ textAlign: 'center',color: 'blue' }}
                   actions={[<CloudServerOutlined key="cloud" />]}
                 >
-                  Implement and manage cloud infrastructure using AWS and Terraform, ensuring scalability 
+                  Implement and manage cloud infrastructure using AWS and Docker, ensuring scalability 
                   and security of the application.
                 </Card>
               </Col>
@@ -110,7 +110,7 @@ const LandingPage = () => {
       </Content>
       <Divider/>
       <Footer style={{ textAlign: 'center',background:'transparent' }}>
-        <strong>Azubi Africa ©{new Date().getFullYear()}</strong>
+        <strong>Azubi Africa ©{new Date().getFullYear()}</strong> - LawrenceMuema
       </Footer>
     </Layout>
   );
