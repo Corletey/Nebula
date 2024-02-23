@@ -136,21 +136,6 @@ const ChallengeComponent = () => {
         onOk={() => setIsModalVisible(false)}
         onCancel={() => setIsModalVisible(false)}
       >
-        <p>Here's your hint:</p>
-        <p><i>"Remember, good code is like a good joke: it needs no explanation." - Unknown</i></p>
-
-        <p>
-        <strong>-- Students Table</strong><br></br>
-        CREATE TABLE IF NOT EXISTS students (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            email VARCHAR(255) NOT NULL UNIQUE,
-            attendance_average DECIMAL(5,2) NOT NULL,
-            assignment_completion INT NOT NULL,
-            ranking INT NOT NULL,
-            cohort VARCHAR(255) NOT NULL
-        );
-        </p>
       </Modal>
     </div>
   );

@@ -7,10 +7,10 @@ import axios from 'axios';
 const ConfigurationPage = () => {
   const [backendUrl, setBackendUrl] = useState('');
   const [dbConfig, setDbConfig] = useState({
-    host: '',
-    user: '',
-    password: '',
-    database: ''
+    host: 'nebu.cloucuci8lza.us-east-1.rds.amazonaws.com',
+    user: 'bula',
+    password: 'infinity',
+    database: 'nebula_db'
   });
   const [loading, setLoading] = useState(false);
 
