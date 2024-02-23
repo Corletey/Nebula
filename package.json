@@ -1,5 +1,9 @@
 {
   "dependencies": {
     "antd": "^5.12.6"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
   }
 }

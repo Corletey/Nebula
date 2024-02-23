@@ -1,11 +1,24 @@
+/**
+ * Import React and components from antd
+ */
 import React from 'react';
 import { Layout, Menu, Card, List } from 'antd';
+
+/**
+ * Define the components for the project portal
+ */
 const { Header, Content, Footer } = Layout;
 
+/**
+ * Define sample data for the project portal
+ */
 const data = [
   // Sample data
 ];
 
+/**
+ * Define the project portal component
+ */
 const ProjectPortal = () => {
   return (
     <Layout className="layout">
@@ -30,4 +43,7 @@ const ProjectPortal = () => {
   );
 };
 
+/**
+ * Export the project portal component
+ */
 export default ProjectPortal;

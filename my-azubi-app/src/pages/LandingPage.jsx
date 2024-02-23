@@ -1,11 +1,24 @@
+/**
+ * Import React and necessary components from Ant Design
+ */
 import React from 'react';
 import { Layout, Breadcrumb, Typography, Card, Row, Col, Space, Divider } from 'antd';
 import { CloudServerOutlined, ApiOutlined, InfoCircleTwoTone,DatabaseOutlined,ArrowDownOutlined } from '@ant-design/icons';
+
+/**
+ * Define the components for the LandingPage
+ */
 const { Header, Content, Footer } = Layout;
 const { Title, Paragraph } = Typography;
 
-import Spacedayimage from '../assets/spaceday.png'
+/**
+ * Import the spaceday image
+ */
+import Spacedayimage from '../assets/spaceday.png';
 
+/**
+ * Define the LandingPage component
+ */
 const LandingPage = () => {
   return (
     <Layout className="layout">
@@ -116,4 +129,7 @@ const LandingPage = () => {
   );
 };
 
+/**
+ * Export the LandingPage component
+ */
 export default LandingPage;
