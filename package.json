@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "antd": "^5.12.6"
+    "antd": "^5.12.7"
   },
   "scripts": {
     "dev": "vite",
